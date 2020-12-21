@@ -5,7 +5,7 @@ from sklearn.model_selection import train_test_split
 
 from cu_ml import LinearRegressionGD
 
-X, Y = make_regression(n_samples=100, n_features=5, random_state=42)
+X, Y = make_regression(n_samples=1000, n_features=5, random_state=42)
 
 X_train, X_test, Y_train, Y_test = train_test_split(
     X, Y, test_size=1 / 3, random_state=0
@@ -15,10 +15,10 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 def test_linear_regression():
     num_iters = 10
     model_np = LinearRegressionGD(
-        num_iterations=num_iters, learning_rate=0.05, backend="numpy"
+        num_iterations=num_iters, learning_rate=0.05, backend="numpy", verbose="ERROR"
     )
     model_cp = LinearRegressionGD(
-        num_iterations=num_iters, learning_rate=0.05, backend="cupy"
+        num_iterations=num_iters, learning_rate=0.05, backend="cupy", verbose="CRITICAL"
     )
 
     with pytest.raises(ValueError):

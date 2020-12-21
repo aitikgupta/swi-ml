@@ -1,4 +1,3 @@
-import cupy as cp
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
@@ -14,14 +13,12 @@ if __name__ == "__main__":
         X, Y, test_size=1 / 3, random_state=0
     )
 
-    X_train = cp.asarray(X_train)
-    X_test = cp.asarray(X_test)
-    Y_train = cp.asarray(Y_train)
-    Y_test = cp.asarray(Y_test)
-
-    model = LinearRegressionGD(num_iterations=10, learning_rate=0.1)
+    model = LinearRegressionGD(
+        num_iterations=100, learning_rate=0.1, backend="numpy", verbose="INFO"
+    )
 
     model.fit(X_train, Y_train)
+
     model.plot_loss()
 
     Y_pred = model.predict(X_test)

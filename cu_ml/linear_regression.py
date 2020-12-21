@@ -1,5 +1,8 @@
 from __future__ import annotations
+
 import math
+import time
+import logging
 
 import cupy
 import numpy
@@ -8,8 +11,9 @@ import matplotlib.pyplot as plt
 
 class LinearRegressionGD:
     def __init__(
-        self, num_iterations: int, learning_rate: float, backend="cupy"
+        self, num_iterations: int, learning_rate: float, backend="cupy", verbose="INFO"
     ) -> None:
+        logging.basicConfig(level=logging._nameToLevel[verbose])
         if backend == "cupy":
             self.backend = cupy
         elif backend == "numpy":
@@ -44,16 +48,21 @@ class LinearRegressionGD:
         X = self.backend.asarray(data)
         Y = self.backend.asarray(labels)
         self._initialise_normal_weights(X.shape)
-        for _ in range(self.num_iterations):
+        start = time.time()
+
+        for it in range(self.num_iterations):
             Y_pred = self.predict(X)
             diff = Y - Y_pred
 
             self.curr_loss = self.MSE_loss(Y, Y_pred)
-            print(f"Current MSE: {self.curr_loss}")
+            logging.info(f" MSE ({it+1}/{self.num_iterations}): {self.curr_loss}")
             self._dW = -(2 * (X.T).dot(diff)) / self.num_samples
             self._db = -2 * self.backend.sum(diff) / self.num_samples
             self._update_weights()
             self._update_history()
+
+        logging.info(f" Training time: {time.time()-start} seconds")
+
         return self
 
     def predict(self, X):
