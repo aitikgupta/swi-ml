@@ -1,6 +1,8 @@
 from __future__ import annotations
 import math
 
+import cupy
+import numpy
 import matplotlib.pyplot as plt
 
 
@@ -9,9 +11,9 @@ class LinearRegressionGD:
         self, num_iterations: int, learning_rate: float, backend="cupy"
     ) -> None:
         if backend == "cupy":
-            import cupy as cp
+            self.backend = cupy
         elif backend == "numpy":
-            import numpy as cp
+            self.backend = numpy
         self.num_iterations = num_iterations
         self.learning_rate = learning_rate
         self.history = []
@@ -19,10 +21,10 @@ class LinearRegressionGD:
     def _initialise_normal_weights(self, shape: tuple) -> None:
         self.num_samples, self.num_features = shape
         limit = 1 / math.sqrt(self.num_features)
-        self.W = cp.asarray(
-            cp.random.uniform(-limit, limit, (self.num_features,))
+        self.W = self.backend.asarray(
+            self.backend.random.uniform(-limit, limit, (self.num_features,))
         )
-        self.b = cp.zeros(
+        self.b = self.backend.zeros(
             1,
         )
 
@@ -34,26 +36,28 @@ class LinearRegressionGD:
         self.b = self.b - self.learning_rate * self._db
         return self
 
-    @staticmethod
-    def MSE_loss(Y_true, Y_pred) -> float:
-        return cp.mean(0.5 * (Y_true - Y_pred) ** 2)
+    # @staticmethod
+    def MSE_loss(self, Y_true, Y_pred) -> float:
+        return self.backend.mean(0.5 * (Y_true - Y_pred) ** 2)
 
     def fit(self, data, labels) -> LinearRegressionGD:
-        self._initialise_normal_weights(data.shape)
+        X = self.backend.asarray(data)
+        Y = self.backend.asarray(labels)
+        self._initialise_normal_weights(X.shape)
         for _ in range(self.num_iterations):
-            Y_pred = self.predict(data)
-            diff = labels - Y_pred
+            Y_pred = self.predict(X)
+            diff = Y - Y_pred
 
-            self.curr_loss = self.MSE_loss(labels, Y_pred)
+            self.curr_loss = self.MSE_loss(Y, Y_pred)
             print(f"Current MSE: {self.curr_loss}")
-            self._dW = -(2 * (data.T).dot(diff)) / self.num_samples
-            self._db = -2 * cp.sum(diff) / self.num_samples
+            self._dW = -(2 * (X.T).dot(diff)) / self.num_samples
+            self._db = -2 * self.backend.sum(diff) / self.num_samples
             self._update_weights()
             self._update_history()
         return self
 
-    def predict(self, data) -> cp.ndarray:
-        return data.dot(self.W) + self.b
+    def predict(self, X):
+        return self.backend.asarray(X).dot(self.W) + self.b
 
     def plot_loss(self) -> None:
         plt.plot(self.history, color="orange")
