@@ -18,21 +18,33 @@ X_train, X_test, Y_train, Y_test = train_test_split(
 
 def test_linear_regression():
     num_iters = 10
+    lr = 0.05
+
     model_np = LinearRegressionGD(
         num_iterations=num_iters,
-        learning_rate=0.05,
+        learning_rate=lr,
         backend="numpy",
         verbose="ERROR",
     )
     model_cp = LinearRegressionGD(
         num_iterations=num_iters,
-        learning_rate=0.05,
+        learning_rate=lr,
         backend="cupy",
-        verbose="CRITICAL",
+        verbose="ERROR",
     )
 
     with pytest.raises(ValueError):
         model_np.fit([], [])
+
+    with pytest.raises(NotImplementedError):
+        wrong_initialiser_model = LinearRegressionGD(
+            num_iterations=num_iters,
+            learning_rate=lr,
+            initialiser="ok",
+            backend="numpy",
+            verbose="ERROR",
+        )
+        wrong_initialiser_model.fit(X_train, Y_train)
 
     model_np.fit(X_train, Y_train)
     model_cp.fit(X_train, Y_train)
@@ -46,19 +58,20 @@ def test_linear_regression():
 
 def test_lasso_regression():
     num_iters = 10
+    lr = 0.05
 
     # Needs l1_cost
     with pytest.raises(TypeError):
         _ = LassoRegressionGD(
             num_iterations=num_iters,
-            learning_rate=0.05,
+            learning_rate=lr,
             backend="numpy",
             verbose="ERROR",
         )
 
     model = LassoRegressionGD(
         num_iterations=num_iters,
-        learning_rate=0.05,
+        learning_rate=lr,
         l1_cost=100,
         backend="numpy",
         verbose="ERROR",
@@ -68,22 +81,26 @@ def test_lasso_regression():
 
     _ = model.predict(X_test)
 
+    assert model.MSE_loss != None
+    assert model.regularisation != None
+
 
 def test_ridge_regression():
     num_iters = 10
+    lr = 0.05
 
     # Needs l2_cost
     with pytest.raises(TypeError):
         _ = RidgeRegressionGD(
             num_iterations=num_iters,
-            learning_rate=0.05,
+            learning_rate=lr,
             backend="numpy",
             verbose="ERROR",
         )
 
     model = RidgeRegressionGD(
         num_iterations=num_iters,
-        learning_rate=0.05,
+        learning_rate=lr,
         l2_cost=100,
         backend="numpy",
         verbose="ERROR",
@@ -93,15 +110,19 @@ def test_ridge_regression():
 
     _ = model.predict(X_test)
 
+    assert model.MSE_loss != None
+    assert model.regularisation != None
+
 
 def test_elasticnet_regression():
     num_iters = 10
+    lr = 0.05
 
     # Needs multiplying factor, as well as l1_ratio
     with pytest.raises(TypeError):
         _ = ElasticNetRegressionGD(
             num_iterations=num_iters,
-            learning_rate=0.05,
+            learning_rate=lr,
             backend="numpy",
             verbose="ERROR",
         )
@@ -109,7 +130,7 @@ def test_elasticnet_regression():
     # Test l1_ratio, initialiser set to zero to have same initial weights
     elastic_net_lasso_model = ElasticNetRegressionGD(
         num_iterations=num_iters,
-        learning_rate=0.05,
+        learning_rate=lr,
         multiply_factor=100,
         l1_ratio=1,
         backend="numpy",
@@ -118,7 +139,7 @@ def test_elasticnet_regression():
     )
     elastic_net_ridge_model = ElasticNetRegressionGD(
         num_iterations=num_iters,
-        learning_rate=0.05,
+        learning_rate=lr,
         multiply_factor=100,
         l1_ratio=0,
         backend="numpy",
@@ -128,7 +149,7 @@ def test_elasticnet_regression():
 
     lasso_model = LassoRegressionGD(
         num_iterations=num_iters,
-        learning_rate=0.05,
+        learning_rate=lr,
         l1_cost=100,
         backend="numpy",
         verbose="ERROR",
@@ -136,7 +157,7 @@ def test_elasticnet_regression():
     )
     ridge_model = RidgeRegressionGD(
         num_iterations=num_iters,
-        learning_rate=0.05,
+        learning_rate=lr,
         l2_cost=100,
         backend="numpy",
         verbose="ERROR",
