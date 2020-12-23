@@ -1,1 +1,6 @@
-from .linear_regression import LinearRegressionGD
+from .linear_regression import (
+    LinearRegressionGD,
+    LassoRegressionGD,
+    RidgeRegressionGD,
+    ElasticNetRegressionGD,
+)

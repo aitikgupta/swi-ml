@@ -14,6 +14,7 @@ class LinearRegressionGD:
         self,
         num_iterations: int,
         learning_rate: float,
+        initialiser="uniform",
         backend="cupy",
         verbose="INFO",
     ) -> None:
@@ -24,6 +25,7 @@ class LinearRegressionGD:
             self.backend = numpy
         self.num_iterations = num_iterations
         self.learning_rate = learning_rate
+        self.initialiser = initialiser
         self.history = []
 
     def _initialise_uniform_weights(self, shape: tuple) -> None:
@@ -31,6 +33,17 @@ class LinearRegressionGD:
         limit = 1 / math.sqrt(self.num_features)
         self.W = self.backend.asarray(
             self.backend.random.uniform(-limit, limit, (self.num_features,))
+        )
+        self.b = self.backend.zeros(
+            1,
+        )
+
+    def _initialise_zeros_weights(self, shape: tuple) -> None:
+        self.num_samples, self.num_features = shape
+        self.W = self.backend.asarray(
+            self.backend.zeros(
+                self.num_features,
+            )
         )
         self.b = self.backend.zeros(
             1,
@@ -51,7 +64,15 @@ class LinearRegressionGD:
     def fit(self, data, labels) -> LinearRegressionGD:
         X = self.backend.asarray(data)
         Y = self.backend.asarray(labels)
-        self._initialise_uniform_weights(X.shape)
+        if self.initialiser == "uniform":
+            self._initialise_uniform_weights(X.shape)
+        elif self.initialiser == "zeros":
+            self._initialise_zeros_weights(X.shape)
+        else:
+            raise NotImplementedError(
+                "Only 'uniform' and 'zeros' initialisers are supported"
+            )
+
         start = time.time()
 
         for it in range(self.num_iterations):
@@ -88,6 +109,7 @@ class LassoRegressionGD:
         num_iterations: int,
         learning_rate: float,
         l1_cost: float,
+        initialiser="uniform",
         backend="cupy",
         verbose="INFO",
     ) -> None:
@@ -98,6 +120,7 @@ class LassoRegressionGD:
             self.backend = numpy
         self.num_iterations = num_iterations
         self.learning_rate = learning_rate
+        self.initialiser = initialiser
         self.history = []
         self.l1_cost = l1_cost
 
@@ -106,6 +129,17 @@ class LassoRegressionGD:
         limit = 1 / math.sqrt(self.num_features)
         self.W = self.backend.asarray(
             self.backend.random.uniform(-limit, limit, (self.num_features,))
+        )
+        self.b = self.backend.zeros(
+            1,
+        )
+
+    def _initialise_zeros_weights(self, shape: tuple) -> None:
+        self.num_samples, self.num_features = shape
+        self.W = self.backend.asarray(
+            self.backend.zeros(
+                self.num_features,
+            )
         )
         self.b = self.backend.zeros(
             1,
@@ -126,7 +160,15 @@ class LassoRegressionGD:
     def fit(self, data, labels) -> LinearRegressionGD:
         X = self.backend.asarray(data)
         Y = self.backend.asarray(labels)
-        self._initialise_uniform_weights(X.shape)
+        if self.initialiser == "uniform":
+            self._initialise_uniform_weights(X.shape)
+        elif self.initialiser == "zeros":
+            self._initialise_zeros_weights(X.shape)
+        else:
+            raise NotImplementedError(
+                "Only 'uniform' and 'zeros' initialisers are supported"
+            )
+
         start = time.time()
         for it in range(self.num_iterations):
             Y_pred = self.predict(X)
@@ -168,6 +210,7 @@ class RidgeRegressionGD:
         num_iterations: int,
         learning_rate: float,
         l2_cost: float,
+        initialiser="uniform",
         backend="cupy",
         verbose="INFO",
     ) -> None:
@@ -178,6 +221,7 @@ class RidgeRegressionGD:
             self.backend = numpy
         self.num_iterations = num_iterations
         self.learning_rate = learning_rate
+        self.initialiser = initialiser
         self.history = []
         self.l2_cost = l2_cost
 
@@ -186,6 +230,17 @@ class RidgeRegressionGD:
         limit = 1 / math.sqrt(self.num_features)
         self.W = self.backend.asarray(
             self.backend.random.uniform(-limit, limit, (self.num_features,))
+        )
+        self.b = self.backend.zeros(
+            1,
+        )
+
+    def _initialise_zeros_weights(self, shape: tuple) -> None:
+        self.num_samples, self.num_features = shape
+        self.W = self.backend.asarray(
+            self.backend.zeros(
+                self.num_features,
+            )
         )
         self.b = self.backend.zeros(
             1,
@@ -206,7 +261,15 @@ class RidgeRegressionGD:
     def fit(self, data, labels) -> LinearRegressionGD:
         X = self.backend.asarray(data)
         Y = self.backend.asarray(labels)
-        self._initialise_uniform_weights(X.shape)
+        if self.initialiser == "uniform":
+            self._initialise_uniform_weights(X.shape)
+        elif self.initialiser == "zeros":
+            self._initialise_zeros_weights(X.shape)
+        else:
+            raise NotImplementedError(
+                "Only 'uniform' and 'zeros' initialisers are supported"
+            )
+
         start = time.time()
         for it in range(self.num_iterations):
             Y_pred = self.predict(X)
@@ -246,6 +309,7 @@ class ElasticNetRegressionGD:
         learning_rate: float,
         multiply_factor: float,
         l1_ratio: float,
+        initialiser="uniform",
         backend="cupy",
         verbose="INFO",
     ) -> None:
@@ -256,6 +320,7 @@ class ElasticNetRegressionGD:
             self.backend = numpy
         self.num_iterations = num_iterations
         self.learning_rate = learning_rate
+        self.initialiser = initialiser
         self.history = []
         self.multiply_factor = multiply_factor
         self.l1_ratio = l1_ratio
@@ -265,6 +330,17 @@ class ElasticNetRegressionGD:
         limit = 1 / math.sqrt(self.num_features)
         self.W = self.backend.asarray(
             self.backend.random.uniform(-limit, limit, (self.num_features,))
+        )
+        self.b = self.backend.zeros(
+            1,
+        )
+
+    def _initialise_zeros_weights(self, shape: tuple) -> None:
+        self.num_samples, self.num_features = shape
+        self.W = self.backend.asarray(
+            self.backend.zeros(
+                self.num_features,
+            )
         )
         self.b = self.backend.zeros(
             1,
@@ -285,7 +361,15 @@ class ElasticNetRegressionGD:
     def fit(self, data, labels) -> LinearRegressionGD:
         X = self.backend.asarray(data)
         Y = self.backend.asarray(labels)
-        self._initialise_uniform_weights(X.shape)
+        if self.initialiser == "uniform":
+            self._initialise_uniform_weights(X.shape)
+        elif self.initialiser == "zeros":
+            self._initialise_zeros_weights(X.shape)
+        else:
+            raise NotImplementedError(
+                "Only 'uniform' and 'zeros' initialisers are supported"
+            )
+
         start = time.time()
         for it in range(self.num_iterations):
             Y_pred = self.predict(X)
