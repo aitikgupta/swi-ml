@@ -2,14 +2,14 @@ from __future__ import annotations
 
 import math
 import time
-import logging
 
-import cupy
-import numpy
 import matplotlib.pyplot as plt
 
+from cu_ml import logger
+from cu_ml.backend import _Backend
 
-class _BaseRegularisation:
+
+class _BaseRegularisation(_Backend):
     """
     Base Class for Regularisation, L1 and L2 regularisations inherit from this
     NOTE: Can be used directly as a L1_L2 (ElasticNet) Regularisation
@@ -18,14 +18,15 @@ class _BaseRegularisation:
     def __init__(self, multiply_factor: float, l1_ratio: float) -> None:
         self.multiply_factor = multiply_factor
         self.l1_ratio = l1_ratio
+        self.backend = super().get_backend()
 
-    def add_cost_regularisation(self, backend, W):
-        l1_regularisation = self.l1_ratio * backend.linalg.norm(W)
+    def add_cost_regularisation(self, W):
+        l1_regularisation = self.l1_ratio * self.backend.linalg.norm(W)
         l2_regularisation = (1 - self.l1_ratio) * W.T.dot(W)
         return self.multiply_factor * (l1_regularisation + l2_regularisation)
 
-    def add_gradient_regularisation(self, backend, W):
-        l1_regularisation = self.l1_ratio * backend.sign(W)
+    def add_gradient_regularisation(self, W):
+        l1_regularisation = self.l1_ratio * self.backend.sign(W)
         l2_regularisation = (1 - self.l1_ratio) * 2 * W
         return self.multiply_factor * (l1_regularisation + l2_regularisation)
 
@@ -61,7 +62,7 @@ class L1_L2Regularisation(_BaseRegularisation):
         super().__init__(multiply_factor, l1_ratio)
 
 
-class _BaseRegression:
+class _BaseRegression(_Backend):
     """
     Base Class for Regression, all regression classes inherit from this
     """
@@ -72,19 +73,16 @@ class _BaseRegression:
         learning_rate: float,
         regularisation=None,
         initialiser="uniform",
-        backend="numpy",
-        verbose="INFO",
+        verbose=None,
     ) -> None:
-        logging.basicConfig(level=logging._nameToLevel[verbose])
-        if backend == "cupy":
-            self.backend = cupy
-        elif backend == "numpy":
-            self.backend = numpy
+        if verbose is not None:
+            logger.setLevel(verbose)
         self.num_iterations = num_iterations
         self.learning_rate = learning_rate
         self.initialiser = initialiser
         self.history = []
         self.regularisation = regularisation
+        self.backend = super().get_backend()
 
     def _initialise_uniform_weights(self, shape: tuple) -> None:
         self.num_samples, self.num_features = shape
@@ -110,7 +108,7 @@ class _BaseRegression:
     def _update_history(self) -> None:
         self.history.append(self.curr_loss)
 
-    def _update_weights(self) -> LinearRegressionGD:
+    def _update_weights(self):
         self.W = self.W - self.learning_rate * self._dW
         self.b = self.b - self.learning_rate * self._db
         return self
@@ -121,9 +119,9 @@ class _BaseRegression:
         """
         return self.backend.mean(
             0.5 * (Y_true - Y_pred) ** 2
-        ) + self.regularisation.add_cost_regularisation(self.backend, self.W)
+        ) + self.regularisation.add_cost_regularisation(self.W)
 
-    def initialise_weights(self, X):
+    def initialise_weights(self, X) -> None:
         """
         Initialises weights with correct dimensions
         """
@@ -140,7 +138,8 @@ class _BaseRegression:
         """
         Given data and labels, it runs the actual training logic
         """
-        # Cast to array, CuPy backend will load the arrays on GPU
+        logger.debug(f"Current Backend: {self.backend}")
+        # cast to array, CuPy backend will load the arrays on GPU
         X = self.backend.asarray(data)
         Y = self.backend.asarray(labels)
 
@@ -152,16 +151,14 @@ class _BaseRegression:
             diff = Y - Y_pred
 
             self.curr_loss = self.MSE_loss(Y, Y_pred)
-            logging.info(
-                f" MSE ({it+1}/{self.num_iterations}): {self.curr_loss}"
+            logger.info(
+                f"MSE ({it+1}/{self.num_iterations}): {self.curr_loss}"
             )
-            # Regularisation magnitude is 0 for vanilla linear regression
+            # regularisation magnitude is 0 for vanilla linear regression
             self._dW = (
                 -(
                     2 * (X.T).dot(diff)
-                    - self.regularisation.add_gradient_regularisation(
-                        self.backend, self.W
-                    )
+                    - self.regularisation.add_gradient_regularisation(self.W)
                 )
                 / self.num_samples
             )
@@ -169,7 +166,7 @@ class _BaseRegression:
             self._update_weights()
             self._update_history()
 
-        logging.info(f" Training time: {time.time()-start} seconds")
+        logger.info(f"Training time: {time.time()-start} seconds")
 
         return self
 
@@ -198,21 +195,19 @@ class LinearRegressionGD(_BaseRegression):
         num_iterations: int,
         learning_rate: float,
         initialiser="uniform",
-        backend="cupy",
-        verbose="INFO",
+        verbose=None,
     ) -> None:
-        # Regularisation of alpha 0 (essentially NIL)
+        # regularisation of alpha 0 (essentially NIL)
         regularisation = _BaseRegularisation(multiply_factor=0, l1_ratio=0)
         super().__init__(
             num_iterations,
             learning_rate,
             regularisation,
             initialiser,
-            backend,
             verbose,
         )
 
-    def plot_loss(self):
+    def plot_loss(self) -> None:
         plt.plot(self.history, label="Linear Regression")
         super().plot_loss()
 
@@ -224,8 +219,7 @@ class LassoRegressionGD(_BaseRegression):
         learning_rate: float,
         l1_cost: float,
         initialiser="uniform",
-        backend="cupy",
-        verbose="INFO",
+        verbose=None,
     ) -> None:
         regularisation = L1Regularisation(l1_cost=l1_cost)
         super().__init__(
@@ -233,11 +227,10 @@ class LassoRegressionGD(_BaseRegression):
             learning_rate,
             regularisation,
             initialiser,
-            backend,
             verbose,
         )
 
-    def plot_loss(self):
+    def plot_loss(self) -> None:
         plt.plot(self.history, label="Lasso Regression")
         super().plot_loss()
 
@@ -250,7 +243,7 @@ class RidgeRegressionGD(_BaseRegression):
         l2_cost: float,
         initialiser="uniform",
         backend="cupy",
-        verbose="INFO",
+        verbose=None,
     ) -> None:
         regularisation = L2Regularisation(l2_cost=l2_cost)
         super().__init__(
@@ -258,11 +251,10 @@ class RidgeRegressionGD(_BaseRegression):
             learning_rate,
             regularisation,
             initialiser,
-            backend,
             verbose,
         )
 
-    def plot_loss(self):
+    def plot_loss(self) -> None:
         plt.plot(self.history, label="Ridge Regression")
         super().plot_loss()
 
@@ -275,8 +267,7 @@ class ElasticNetRegressionGD(_BaseRegression):
         multiply_factor: float,
         l1_ratio: float,
         initialiser="uniform",
-        backend="cupy",
-        verbose="INFO",
+        verbose=None,
     ) -> None:
         regularisation = L1_L2Regularisation(
             multiply_factor=multiply_factor, l1_ratio=l1_ratio
@@ -286,10 +277,9 @@ class ElasticNetRegressionGD(_BaseRegression):
             learning_rate,
             regularisation,
             initialiser,
-            backend,
             verbose,
         )
 
-    def plot_loss(self):
+    def plot_loss(self) -> None:
         plt.plot(self.history, label="Elastic Net Regression")
         super().plot_loss()
