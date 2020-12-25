@@ -1,7 +1,11 @@
+import numpy as np
 import pandas as pd
+import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
-from cu_ml import LinearRegressionGD
+from cu_ml import LinearRegressionGD, set_backend, set_logging_level, logger
+
+set_backend("numpy")
 
 if __name__ == "__main__":
     df = pd.read_csv("sample_data/salary.csv")
@@ -14,14 +18,16 @@ if __name__ == "__main__":
     )
 
     model = LinearRegressionGD(
-        num_iterations=100, learning_rate=0.1, backend="numpy", verbose="INFO"
+        num_iterations=100, learning_rate=0.01, verbose="INFO"
     )
 
     model.fit(X_train, Y_train)
 
     model.plot_loss()
 
+    plt.show()
+
     Y_pred = model.predict(X_test)
 
-    print(f"Y_Pred: {Y_pred[:5]}")
+    print(f"Y_Pred: {np.round(Y_pred[:5], 0)}")
     print(f"Y_True: {Y_test[:5]}")
