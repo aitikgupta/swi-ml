@@ -30,6 +30,7 @@ from .linear_regression import (
     LassoRegressionGD,
     RidgeRegressionGD,
     ElasticNetRegressionGD,
+    PolynomialRegressionGD,
 )
 
 # backend throughout the library, to be set by user

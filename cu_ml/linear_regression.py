@@ -7,6 +7,7 @@ import matplotlib.pyplot as plt
 
 from cu_ml import logger
 from cu_ml.backend import _Backend
+import cu_ml.preprocess_utils as utils
 
 
 class _BaseRegularisation(_Backend):
@@ -16,8 +17,10 @@ class _BaseRegularisation(_Backend):
     """
 
     def __init__(self, multiply_factor: float, l1_ratio: float) -> None:
-        self.multiply_factor = multiply_factor
-        self.l1_ratio = l1_ratio
+        self.multiply_factor = (
+            multiply_factor if multiply_factor is not None else 1
+        )
+        self.l1_ratio = l1_ratio if l1_ratio is not None else 1
         self.backend = super().get_backend()
 
     def add_cost_regularisation(self, W):
@@ -71,6 +74,7 @@ class _BaseRegression(_Backend):
         self,
         num_iterations: int,
         learning_rate: float,
+        normalize=True,
         regularisation=None,
         initialiser="uniform",
         verbose=None,
@@ -79,6 +83,7 @@ class _BaseRegression(_Backend):
             logger.setLevel(verbose)
         self.num_iterations = num_iterations
         self.learning_rate = learning_rate
+        self.normalize = normalize
         self.initialiser = initialiser
         self.history = []
         self.regularisation = regularisation
@@ -134,20 +139,27 @@ class _BaseRegression(_Backend):
                 "Only 'uniform' and 'zeros' initialisers are supported"
             )
 
+    def _fit_preprocess(self, data, labels):
+        # offload to-be-used-once tasks to CPU
+        if self.normalize:
+            data = utils.normalize(data)
+        # cast to array, CuPy backend will load the arrays on GPU
+        X = self.backend.asarray(data)
+        Y = self.backend.asarray(labels)
+        return X, Y
+
     def fit(self, data, labels):
         """
         Given data and labels, it runs the actual training logic
         """
         logger.debug(f"Current Backend: {self.backend}")
-        # cast to array, CuPy backend will load the arrays on GPU
-        X = self.backend.asarray(data)
-        Y = self.backend.asarray(labels)
+        X, Y = self._fit_preprocess(data, labels)
 
         self.initialise_weights(X)
 
         start = time.time()
         for it in range(self.num_iterations):
-            Y_pred = self.predict(X)
+            Y_pred = self._predict(X)
             diff = Y - Y_pred
 
             self.curr_loss = self.MSE_loss(Y, Y_pred)
@@ -170,11 +182,19 @@ class _BaseRegression(_Backend):
 
         return self
 
+    def _predict_preprocess(self, data):
+        if self.normalize:
+            data = utils.normalize(data)
+        return self.backend.asarray(data)
+
     def predict(self, X):
         """
         Given an input array X, it returns the prediction array
         (GPU array if CuPy backend is enabled) after inferencing
         """
+        return self._predict_preprocess(X).dot(self.W) + self.b
+
+    def _predict(self, X):
         return self.backend.asarray(X).dot(self.W) + self.b
 
     def plot_loss(self) -> None:
@@ -194,6 +214,7 @@ class LinearRegressionGD(_BaseRegression):
         self,
         num_iterations: int,
         learning_rate: float,
+        normalize=True,
         initialiser="uniform",
         verbose=None,
     ) -> None:
@@ -202,6 +223,7 @@ class LinearRegressionGD(_BaseRegression):
         super().__init__(
             num_iterations,
             learning_rate,
+            normalize,
             regularisation,
             initialiser,
             verbose,
@@ -218,6 +240,7 @@ class LassoRegressionGD(_BaseRegression):
         num_iterations: int,
         learning_rate: float,
         l1_cost: float,
+        normalize=True,
         initialiser="uniform",
         verbose=None,
     ) -> None:
@@ -225,6 +248,7 @@ class LassoRegressionGD(_BaseRegression):
         super().__init__(
             num_iterations,
             learning_rate,
+            normalize,
             regularisation,
             initialiser,
             verbose,
@@ -241,6 +265,7 @@ class RidgeRegressionGD(_BaseRegression):
         num_iterations: int,
         learning_rate: float,
         l2_cost: float,
+        normalize=True,
         initialiser="uniform",
         backend="cupy",
         verbose=None,
@@ -249,6 +274,7 @@ class RidgeRegressionGD(_BaseRegression):
         super().__init__(
             num_iterations,
             learning_rate,
+            normalize,
             regularisation,
             initialiser,
             verbose,
@@ -266,6 +292,7 @@ class ElasticNetRegressionGD(_BaseRegression):
         learning_rate: float,
         multiply_factor: float,
         l1_ratio: float,
+        normalize=True,
         initialiser="uniform",
         verbose=None,
     ) -> None:
@@ -275,6 +302,7 @@ class ElasticNetRegressionGD(_BaseRegression):
         super().__init__(
             num_iterations,
             learning_rate,
+            normalize,
             regularisation,
             initialiser,
             verbose,
@@ -282,4 +310,42 @@ class ElasticNetRegressionGD(_BaseRegression):
 
     def plot_loss(self) -> None:
         plt.plot(self.history, label="Elastic Net Regression")
+        super().plot_loss()
+
+
+class PolynomialRegressionGD(ElasticNetRegressionGD):
+    def __init__(
+        self,
+        num_iterations: int,
+        learning_rate: float,
+        degree: float,
+        multiply_factor=None,
+        l1_ratio=None,
+        normalize=True,
+        initialiser="uniform",
+        verbose=None,
+    ) -> None:
+        self.degree = degree
+        super().__init__(
+            num_iterations,
+            learning_rate,
+            multiply_factor,
+            l1_ratio,
+            normalize,
+            initialiser,
+            verbose,
+        )
+
+    def _fit_preprocess(self, data, labels):
+        poly_data = utils.transform_polynomial(data, self.degree)
+        return super()._fit_preprocess(poly_data, labels)
+
+    def _predict_preprocess(self, data):
+        poly_data = utils.transform_polynomial(data, self.degree)
+        return super()._predict_preprocess(poly_data)
+
+    def plot_loss(self) -> None:
+        plt.plot(
+            self.history, label=f"Polynomial Regression, degree={self.degree}"
+        )
         super().plot_loss()
