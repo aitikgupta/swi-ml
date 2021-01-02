@@ -1,4 +1,5 @@
 import pytest
+from numpy.testing import assert_equal
 from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
 
@@ -10,6 +11,7 @@ from cu_ml import (
     LassoRegressionGD,
     RidgeRegressionGD,
     ElasticNetRegressionGD,
+    PolynomialRegressionGD,
 )
 
 set_logging_level("DEBUG")
@@ -34,7 +36,7 @@ def test_linear_regression():
         learning_rate=lr,
     )
 
-    with pytest.raises(ValueError):
+    with pytest.raises(TypeError):
         model_np.fit([], [])
 
     model_np.fit(X_train, Y_train)
@@ -112,8 +114,8 @@ def test_ridge_regression():
 
     _ = model.predict(X_test)
 
-    assert model.MSE_loss != None
-    assert model.regularisation != None
+    assert model.MSE_loss is not None
+    assert model.regularisation is not None
 
 
 def test_elasticnet_regression():
@@ -134,6 +136,7 @@ def test_elasticnet_regression():
         multiply_factor=100,
         l1_ratio=1,
         initialiser="zeros",
+        normalize=False,
     )
     elastic_net_ridge_model = ElasticNetRegressionGD(
         num_iterations=num_iters,
@@ -141,6 +144,7 @@ def test_elasticnet_regression():
         multiply_factor=100,
         l1_ratio=0,
         initialiser="zeros",
+        normalize=False,
     )
 
     lasso_model = LassoRegressionGD(
@@ -148,12 +152,14 @@ def test_elasticnet_regression():
         learning_rate=lr,
         l1_cost=100,
         initialiser="zeros",
+        normalize=False,
     )
     ridge_model = RidgeRegressionGD(
         num_iterations=num_iters,
         learning_rate=lr,
         l2_cost=100,
         initialiser="zeros",
+        normalize=False,
     )
 
     elastic_net_lasso_model.fit(X_train, Y_train)
@@ -168,5 +174,43 @@ def test_elasticnet_regression():
     ridge_model.fit(X_train, Y_train)
     ridge_pred = ridge_model.predict(X_test)
 
-    assert (elastic_net_lasso_pred == lasso_pred).all()
-    assert (elastic_net_ridge_pred == ridge_pred).all()
+    assert_equal(elastic_net_lasso_pred, lasso_pred)
+    assert_equal(elastic_net_ridge_pred, ridge_pred)
+
+
+def test_polynomial_regression():
+    num_iters = 10
+    lr = 0.05
+
+    # needs degree
+    with pytest.raises(TypeError):
+        _ = PolynomialRegressionGD(
+            num_iterations=num_iters,
+            learning_rate=lr,
+        )
+
+    # test degree
+    linear_regression_model = LinearRegressionGD(
+        num_iterations=num_iters,
+        learning_rate=lr,
+        initialiser="zeros",
+        normalize=False,
+    )
+    polynomial_regression_model = PolynomialRegressionGD(
+        num_iterations=num_iters,
+        learning_rate=lr,
+        initialiser="zeros",
+        normalize=False,
+        degree=1,
+    )
+
+    linear_regression_model.fit(X_train, Y_train)
+    linear_regression_pred = linear_regression_model.predict(X_test)
+
+    polynomial_regression_model.fit(X_train, Y_train)
+    polynomial_regression_pred = polynomial_regression_model.predict(X_test)
+
+    # assert_equal(polynomial_regression_pred, linear_regression_pred)
+
+    assert polynomial_regression_model.MSE_loss is not None
+    assert polynomial_regression_model.degree is not None
