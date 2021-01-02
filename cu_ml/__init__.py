@@ -25,13 +25,6 @@ logger.setLevel(logging.WARN)
 
 
 from .backend import _Backend
-from .linear_regression import (
-    LinearRegressionGD,
-    LassoRegressionGD,
-    RidgeRegressionGD,
-    ElasticNetRegressionGD,
-    PolynomialRegressionGD,
-)
 
 # backend throughout the library, to be set by user
 _global_backend = _Backend()

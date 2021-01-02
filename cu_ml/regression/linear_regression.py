@@ -1,13 +1,16 @@
 from __future__ import annotations
 
+import logging
 import math
 import time
 
 import matplotlib.pyplot as plt
 
-from cu_ml import logger
+from cu_ml import logger as _global_logger
 from cu_ml.backend import _Backend
-import cu_ml.preprocess_utils as utils
+from cu_ml.utils import manipulations
+
+logger = logging.getLogger(__name__)
 
 
 class _BaseRegularisation(_Backend):
@@ -81,6 +84,8 @@ class _BaseRegression(_Backend):
     ) -> None:
         if verbose is not None:
             logger.setLevel(verbose)
+        else:
+            logger.setLevel(_global_logger.getEffectiveLevel())
         self.num_iterations = num_iterations
         self.learning_rate = learning_rate
         self.normalize = normalize
@@ -142,7 +147,7 @@ class _BaseRegression(_Backend):
     def _fit_preprocess(self, data, labels):
         # offload to-be-used-once tasks to CPU
         if self.normalize:
-            data = utils.normalize(data)
+            data = manipulations.normalize(data)
         # cast to array, CuPy backend will load the arrays on GPU
         X = self.backend.asarray(data)
         Y = self.backend.asarray(labels)
@@ -160,7 +165,7 @@ class _BaseRegression(_Backend):
         start = time.time()
         for it in range(self.num_iterations):
             Y_pred = self._predict(X)
-            diff = Y - Y_pred
+            diff = self.backend.subtract(Y, Y_pred)
 
             self.curr_loss = self.MSE_loss(Y, Y_pred)
             logger.info(
@@ -175,6 +180,7 @@ class _BaseRegression(_Backend):
                 / self.num_samples
             )
             self._db = -2 * self.backend.sum(diff) / self.num_samples
+
             self._update_weights()
             self._update_history()
 
@@ -184,7 +190,7 @@ class _BaseRegression(_Backend):
 
     def _predict_preprocess(self, data):
         if self.normalize:
-            data = utils.normalize(data)
+            data = manipulations.normalize(data)
         return self.backend.asarray(data)
 
     def predict(self, X):
@@ -195,7 +201,7 @@ class _BaseRegression(_Backend):
         return self._predict_preprocess(X).dot(self.W) + self.b
 
     def _predict(self, X):
-        return self.backend.asarray(X).dot(self.W) + self.b
+        return X.dot(self.W) + self.b
 
     def plot_loss(self) -> None:
         """
@@ -337,11 +343,11 @@ class PolynomialRegressionGD(ElasticNetRegressionGD):
         )
 
     def _fit_preprocess(self, data, labels):
-        poly_data = utils.transform_polynomial(data, self.degree)
+        poly_data = manipulations.transform_polynomial(data, self.degree)
         return super()._fit_preprocess(poly_data, labels)
 
     def _predict_preprocess(self, data):
-        poly_data = utils.transform_polynomial(data, self.degree)
+        poly_data = manipulations.transform_polynomial(data, self.degree)
         return super()._predict_preprocess(poly_data)
 
     def plot_loss(self) -> None:

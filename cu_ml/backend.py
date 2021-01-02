@@ -1,8 +1,9 @@
+import logging
+
 import cupy
 import numpy
 
-from cu_ml import logger
-
+logger = logging.getLogger(__name__)
 params = dict()
 
 
@@ -13,7 +14,7 @@ class _Backend:
 
     def set_backend(self, backend):
         global params
-        logger.info(f"Setting backend: {backend}")
+        logger.warning(f"Setting backend: {backend}")
         if backend == "numpy":
             params["backend"] = numpy
         elif backend == "cupy":
