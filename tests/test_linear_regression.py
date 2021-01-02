@@ -7,6 +7,8 @@ from cu_ml import (
     logger,
     set_logging_level,
     set_backend,
+)
+from cu_ml.regression import (
     LinearRegressionGD,
     LassoRegressionGD,
     RidgeRegressionGD,
