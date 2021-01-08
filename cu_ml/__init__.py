@@ -32,3 +32,10 @@ _global_backend = _Backend()
 
 def set_backend(module_backend):
     _global_backend.set_backend(module_backend)
+
+
+from .utils import (
+    activations,
+    distributions,
+    manipulations,
+)

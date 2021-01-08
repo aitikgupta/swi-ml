@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 
 from cu_ml import logger as _global_logger
 from cu_ml.backend import _Backend
-from cu_ml.utils import manipulations
+from cu_ml import manipulations
 
 logger = logging.getLogger(__name__)
 

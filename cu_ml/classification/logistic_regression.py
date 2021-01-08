@@ -1,4 +1,4 @@
-from cu_ml.utils import Sigmoid
+from cu_ml import activations
 from cu_ml.regression import ElasticNetRegressionGD
 
 
@@ -13,7 +13,7 @@ class LogisticRegressionGD(ElasticNetRegressionGD):
         initialiser="uniform",
         verbose=None,
     ) -> None:
-        self.activation = Sigmoid()
+        self.activation = activations.Sigmoid()
         super().__init__(
             num_iterations,
             learning_rate,
