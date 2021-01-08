@@ -9,7 +9,7 @@ from cu_ml import set_backend
 set_backend("numpy")
 
 if __name__ == "__main__":
-    df = pd.read_csv("sample_data/diabetes.csv")
+    df = pd.read_csv("../sample_data/diabetes.csv")
 
     X = df.iloc[:, :-1].values
     Y = df.iloc[:, -1].values
