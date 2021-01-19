@@ -1,5 +1,4 @@
 import pytest
-from numpy.testing import assert_equal
 from sklearn.datasets import make_classification
 from sklearn.model_selection import train_test_split
 
@@ -33,7 +32,7 @@ def test_logistic_regression():
         learning_rate=lr,
     )
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         model_np.fit([], [])
 
     model_np.fit(X_train, Y_train)

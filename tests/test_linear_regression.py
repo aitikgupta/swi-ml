@@ -38,7 +38,7 @@ def test_linear_regression():
         learning_rate=lr,
     )
 
-    with pytest.raises(TypeError):
+    with pytest.raises(ValueError):
         model_np.fit([], [])
 
     model_np.fit(X_train, Y_train)
