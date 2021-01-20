@@ -1,25 +1,27 @@
 from cu_ml import activations
-from cu_ml.regression import ElasticNetRegressionGD
+from cu_ml.regression.linear_regression import _BaseRegression, L1_L2Regularisation
 
 
-class LogisticRegressionGD(ElasticNetRegressionGD):
+class LogisticRegressionGD(_BaseRegression):
     def __init__(
         self,
         num_iterations: int,
         learning_rate: float,
         multiply_factor=None,
         l1_ratio=None,
-        normalize=True,
+        normalize=False,
         initialiser="uniform",
         verbose=None,
     ) -> None:
         self.activation = activations.Sigmoid()
+        regularisation = L1_L2Regularisation(
+            multiply_factor=multiply_factor, l1_ratio=l1_ratio
+        )
         super().__init__(
             num_iterations,
             learning_rate,
-            multiply_factor,
-            l1_ratio,
             normalize,
+            regularisation,
             initialiser,
             verbose,
         )
@@ -30,10 +32,10 @@ class LogisticRegressionGD(ElasticNetRegressionGD):
         (GPU array if CuPy backend is enabled) after inferencing
         """
         if probability:
-            return self._predict_preprocess(X).dot(self.W) + self.b
+            return self._predict(self._predict_preprocess(X))
         else:
             activated_pred = self.activation.activate(
-                self._predict_preprocess(X).dot(self.W) + self.b
+                self._predict(self._predict_preprocess(X))
             )
             return self.backend.where(activated_pred > 0.5, 1, 0)
 
