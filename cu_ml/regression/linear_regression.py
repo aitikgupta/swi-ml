@@ -77,7 +77,7 @@ class _BaseRegression(_Backend):
         self,
         num_iterations: int,
         learning_rate: float,
-        normalize=True,
+        normalize=False,
         regularisation=None,
         initialiser="uniform",
         verbose=None,
@@ -90,8 +90,8 @@ class _BaseRegression(_Backend):
         self.learning_rate = learning_rate
         self.normalize = normalize
         self.initialiser = initialiser
-        self.history = []
         self.regularisation = regularisation
+        self.history = []
         self.backend = super().get_backend()
 
     def _initialise_uniform_weights(self, shape: tuple) -> None:
@@ -198,7 +198,7 @@ class _BaseRegression(_Backend):
         Given an input array X, it returns the prediction array
         (GPU array if CuPy backend is enabled) after inferencing
         """
-        return self._predict_preprocess(X).dot(self.W) + self.b
+        return self._predict(self._predict_preprocess(X))
 
     def _predict(self, X):
         return X.dot(self.W) + self.b
@@ -220,7 +220,7 @@ class LinearRegressionGD(_BaseRegression):
         self,
         num_iterations: int,
         learning_rate: float,
-        normalize=True,
+        normalize=False,
         initialiser="uniform",
         verbose=None,
     ) -> None:
@@ -246,7 +246,7 @@ class LassoRegressionGD(_BaseRegression):
         num_iterations: int,
         learning_rate: float,
         l1_cost: float,
-        normalize=True,
+        normalize=False,
         initialiser="uniform",
         verbose=None,
     ) -> None:
@@ -271,7 +271,7 @@ class RidgeRegressionGD(_BaseRegression):
         num_iterations: int,
         learning_rate: float,
         l2_cost: float,
-        normalize=True,
+        normalize=False,
         initialiser="uniform",
         backend="cupy",
         verbose=None,
@@ -298,7 +298,7 @@ class ElasticNetRegressionGD(_BaseRegression):
         learning_rate: float,
         multiply_factor: float,
         l1_ratio: float,
-        normalize=True,
+        normalize=False,
         initialiser="uniform",
         verbose=None,
     ) -> None:
@@ -319,7 +319,7 @@ class ElasticNetRegressionGD(_BaseRegression):
         super().plot_loss()
 
 
-class PolynomialRegressionGD(ElasticNetRegressionGD):
+class PolynomialRegressionGD(_BaseRegression):
     def __init__(
         self,
         num_iterations: int,
@@ -327,17 +327,19 @@ class PolynomialRegressionGD(ElasticNetRegressionGD):
         degree: float,
         multiply_factor=None,
         l1_ratio=None,
-        normalize=True,
+        normalize=False,
         initialiser="uniform",
         verbose=None,
     ) -> None:
         self.degree = degree
+        regularisation = L1_L2Regularisation(
+            multiply_factor=multiply_factor, l1_ratio=l1_ratio
+        )
         super().__init__(
             num_iterations,
             learning_rate,
-            multiply_factor,
-            l1_ratio,
             normalize,
+            regularisation,
             initialiser,
             verbose,
         )
