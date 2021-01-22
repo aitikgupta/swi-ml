@@ -1,5 +1,5 @@
 import math
-from cu_ml.backend import _Backend
+from swi_ml.backend import _Backend
 
 
 class GaussianDistribution(_Backend):

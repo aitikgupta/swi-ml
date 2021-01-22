@@ -2,8 +2,8 @@ import logging
 import math
 import time
 
-from cu_ml.backend import _Backend
-from cu_ml import logger as _global_logger, manipulations
+from swi_ml.backend import _Backend
+from swi_ml import logger as _global_logger, manipulations
 
 logger = logging.getLogger(__name__)
 

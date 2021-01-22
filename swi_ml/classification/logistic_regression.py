@@ -1,5 +1,5 @@
-from cu_ml import activations
-from cu_ml.regression.linear_regression import _BaseRegression, L1_L2Regularisation
+from swi_ml import activations
+from swi_ml.regression.linear_regression import _BaseRegression, L1_L2Regularisation
 
 
 class LogisticRegressionGD(_BaseRegression):

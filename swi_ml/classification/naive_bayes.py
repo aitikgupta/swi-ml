@@ -1,8 +1,8 @@
 import logging
 
-from cu_ml import logger as _global_logger
-from cu_ml.backend import _Backend
-from cu_ml import distributions
+from swi_ml import logger as _global_logger
+from swi_ml.backend import _Backend
+from swi_ml import distributions
 
 logger = logging.getLogger(__name__)
 
