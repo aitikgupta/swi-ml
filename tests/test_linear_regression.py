@@ -3,12 +3,12 @@ from numpy.testing import assert_equal
 from sklearn.datasets import make_regression
 from sklearn.model_selection import train_test_split
 
-from cu_ml import (
+from swi_ml import (
     logger,
     set_logging_level,
     set_backend,
 )
-from cu_ml.regression import (
+from swi_ml.regression import (
     LinearRegressionGD,
     LassoRegressionGD,
     RidgeRegressionGD,

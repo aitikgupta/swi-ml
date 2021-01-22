@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 from sklearn import datasets
 from sklearn.model_selection import train_test_split
 
-from cu_ml.svm import SVM
-from cu_ml import set_backend
+from swi_ml.svm import SVM
+from swi_ml import set_backend
 
 set_backend("numpy")
 

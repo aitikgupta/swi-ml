@@ -2,8 +2,8 @@ import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
 
-from cu_ml.classification import NaiveBayesClassification
-from cu_ml import set_backend
+from swi_ml.classification import NaiveBayesClassification
+from swi_ml import set_backend
 
 set_backend("numpy")
 

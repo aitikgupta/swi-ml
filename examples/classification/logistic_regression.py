@@ -3,8 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
-from cu_ml.classification import LogisticRegressionGD
-from cu_ml import set_backend
+from swi_ml.classification import LogisticRegressionGD
+from swi_ml import set_backend
 
 set_backend("numpy")
 
