@@ -15,7 +15,9 @@ from swi_ml.svm import (
 set_logging_level("DEBUG")
 logger.setLevel("DEBUG")
 
-X, Y = make_blobs(n_samples=50, n_features=2, centers=2, cluster_std=1.05, random_state=40)
+X, Y = make_blobs(
+    n_samples=50, n_features=2, centers=2, cluster_std=1.05, random_state=40
+)
 Y = np.where(Y == 0, -1, 1)
 
 X_train, X_test, Y_train, Y_test = train_test_split(
@@ -42,7 +44,7 @@ def test_svm():
         wrong_ratio_model = SVM(
             num_iterations=num_iters,
             learning_rate=lr,
-            regularisation_ratio=1.5
+            regularisation_ratio=1.5,
         )
         wrong_ratio_model.fit(X_train, Y_train)
 

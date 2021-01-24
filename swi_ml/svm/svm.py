@@ -14,7 +14,7 @@ class SVM(_Backend):
         num_iterations: int,
         learning_rate: float,
         regularisation_ratio=0.5,
-        hinge_constant=1.,
+        hinge_constant=1.0,
         normalize=False,
         regularisation=None,
         initialiser="uniform",
@@ -76,7 +76,10 @@ class SVM(_Backend):
         return self.backend.mean(self.backend.where(sub < 0, 0, sub))
 
     def _fit_preprocess(self, data, labels):
-        if self.regularisation_ratio <= 0. or self.regularisation_ratio >= 1.:
+        if (
+            self.regularisation_ratio <= 0.0
+            or self.regularisation_ratio >= 1.0
+        ):
             raise ValueError("regularisation ratio should be between 0 and 1")
 
         # offload to-be-used-once tasks to CPU
@@ -105,13 +108,20 @@ class SVM(_Backend):
                 f"Hinge Loss ({it+1}/{self.num_iterations}): {self.curr_loss}"
             )
 
-            safe_zones = self.backend.where(Y <= 0, -self.hinge_constant, self.hinge_constant)
+            safe_zones = self.backend.where(
+                Y <= 0, -self.hinge_constant, self.hinge_constant
+            )
 
             for idx, sample in enumerate(X):
-                if safe_zones[idx] * self._predict(sample) >= self.hinge_constant:
+                if (
+                    safe_zones[idx] * self._predict(sample)
+                    >= self.hinge_constant
+                ):
                     self._dW = 2 * self.regularisation_ratio * self.W
                 else:
-                    self._dW = 2 * self.regularisation_ratio * self.W - (1 - self.regularisation_ratio) * sample.dot(safe_zones[idx])
+                    self._dW = 2 * self.regularisation_ratio * self.W - (
+                        1 - self.regularisation_ratio
+                    ) * sample.dot(safe_zones[idx])
                 self._db = safe_zones[idx]
 
                 self._update_weights()
