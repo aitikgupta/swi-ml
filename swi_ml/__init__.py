@@ -1,3 +1,7 @@
+# changenote: If you're viewing this commit, then it means the name of the
+# library is changed from cu-ml to swi-ml to avoid confusion with cuML, a
+# library from RapidsAI (https://github.com/rapidsai/cuml)
+
 import logging
 
 from .logs import INFOFORMATTER, DEBUGFORMATTER
