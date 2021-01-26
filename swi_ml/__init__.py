@@ -42,4 +42,5 @@ from .utils import (
     activations,
     distributions,
     manipulations,
+    regularisers,
 )

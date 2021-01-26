@@ -8,64 +8,15 @@ import matplotlib.pyplot as plt
 
 from swi_ml import logger as _global_logger
 from swi_ml.backend import _Backend
-from swi_ml import manipulations
+from swi_ml.manipulations import normalize, transform_polynomial
+from swi_ml.regularisers import (
+    _BaseRegularisation,
+    L1Regularisation,
+    L2Regularisation,
+    L1_L2Regularisation,
+)
 
 logger = logging.getLogger(__name__)
-
-
-class _BaseRegularisation(_Backend):
-    """
-    Base Class for Regularisation, L1 and L2 regularisations inherit from this
-    NOTE: Can be used directly as a L1_L2 (ElasticNet) Regularisation
-    """
-
-    def __init__(self, multiply_factor: float, l1_ratio: float) -> None:
-        self.multiply_factor = (
-            multiply_factor if multiply_factor is not None else 1
-        )
-        self.l1_ratio = l1_ratio if l1_ratio is not None else 1
-        self.backend = super().get_backend()
-
-    def add_cost_regularisation(self, W):
-        l1_regularisation = self.l1_ratio * self.backend.linalg.norm(W)
-        l2_regularisation = (1 - self.l1_ratio) * W.T.dot(W)
-        return self.multiply_factor * (l1_regularisation + l2_regularisation)
-
-    def add_gradient_regularisation(self, W):
-        l1_regularisation = self.l1_ratio * self.backend.sign(W)
-        l2_regularisation = (1 - self.l1_ratio) * 2 * W
-        return self.multiply_factor * (l1_regularisation + l2_regularisation)
-
-
-class L1Regularisation(_BaseRegularisation):
-    """
-    Lasso Regression Regularisation
-    """
-
-    def __init__(self, l1_cost: float) -> None:
-        multiply_factor = l1_cost
-        l1_ratio = 1
-        super().__init__(multiply_factor, l1_ratio)
-
-
-class L2Regularisation(_BaseRegularisation):
-    """
-    Ridge Regression Regularisation
-    """
-
-    def __init__(self, l2_cost: float) -> None:
-        multiply_factor = l2_cost
-        l1_ratio = 0
-        super().__init__(multiply_factor, l1_ratio)
-
-
-class L1_L2Regularisation(_BaseRegularisation):
-    """
-    ElasticNet Regression Regularisation
-    """
-
-    def __init__(self, multiply_factor: float, l1_ratio: float) -> None:
-        super().__init__(multiply_factor, l1_ratio)
 
 
 class _BaseRegression(_Backend):
@@ -147,7 +98,7 @@ class _BaseRegression(_Backend):
     def _fit_preprocess(self, data, labels):
         # offload to-be-used-once tasks to CPU
         if self.normalize:
-            data = manipulations.normalize(data)
+            data = normalize(data)
         # cast to array, CuPy backend will load the arrays on GPU
         X = self.backend.asarray(data)
         Y = self.backend.asarray(labels)
@@ -190,7 +141,7 @@ class _BaseRegression(_Backend):
 
     def _predict_preprocess(self, data):
         if self.normalize:
-            data = manipulations.normalize(data)
+            data = normalize(data)
         return self.backend.asarray(data)
 
     def predict(self, X):
@@ -345,11 +296,11 @@ class PolynomialRegressionGD(_BaseRegression):
         )
 
     def _fit_preprocess(self, data, labels):
-        poly_data = manipulations.transform_polynomial(data, self.degree)
+        poly_data = transform_polynomial(data, self.degree)
         return super()._fit_preprocess(poly_data, labels)
 
     def _predict_preprocess(self, data):
-        poly_data = manipulations.transform_polynomial(data, self.degree)
+        poly_data = transform_polynomial(data, self.degree)
         return super()._predict_preprocess(poly_data)
 
     def plot_loss(self) -> None:
