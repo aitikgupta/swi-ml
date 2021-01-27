@@ -1,10 +1,25 @@
 import logging
 
-import cupy
-import numpy
-
 logger = logging.getLogger(__name__)
 params = dict()
+
+try:
+    import numpy
+except ImportError:
+    raise ImportError(
+        "'swi-ml has a single NumPy dependency, visit their installation "
+        "guide: https://numpy.org/install/"
+    )
+
+try:
+    import cupy
+
+    _raise_cupy_error = False
+except ImportError:
+    _raise_cupy_error = True
+    logger.warning(
+        "No 'cupy' installation found, backend will be defaulted to 'numpy'"
+    )
 
 
 class _Backend:
@@ -18,7 +33,13 @@ class _Backend:
         if backend == "numpy":
             params["backend"] = numpy
         elif backend == "cupy":
-            params["backend"] = cupy
+            if not _raise_cupy_error:
+                params["backend"] = cupy
+            else:
+                raise ImportError(
+                    "'cupy' backend needs to be installed first, visit "
+                    "https://docs.cupy.dev/en/stable/install.html#install-cupy"
+                )
         else:
             raise NotImplementedError(
                 "Only 'numpy' and 'cupy' backends are supported"
@@ -28,6 +49,6 @@ class _Backend:
     def get_backend(self):
         global params
         if "backend" not in params.keys():
-            logger.critical("Backend is not set, using default `numpy`")
+            logger.critical("Backend is not set, using default 'numpy'")
             self.set_backend("numpy")
         return params["backend"]
