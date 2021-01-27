@@ -33,13 +33,21 @@ class _Backend:
         if backend == "numpy":
             params["backend"] = numpy
         elif backend == "cupy":
+            from swi_ml import _fallback_to_numpy
+
             if not _raise_cupy_error:
                 params["backend"] = cupy
+            elif _fallback_to_numpy:
+                logger.warning(
+                    "'cupy' backend not found, falling back to 'numpy'"
+                )
+                self.set_backend("numpy")
             else:
                 raise ImportError(
                     "'cupy' backend needs to be installed first, visit "
                     "https://docs.cupy.dev/en/stable/install.html#install-cupy"
                 )
+
         else:
             raise NotImplementedError(
                 "Only 'numpy' and 'cupy' backends are supported"

@@ -7,6 +7,14 @@ import sys
 
 from .logs import INFOFORMATTER, DEBUGFORMATTER
 
+_fallback_to_numpy = False
+
+
+def set_automatic_fallback(boolean):
+    global _fallback_to_numpy
+    _fallback_to_numpy = boolean
+
+
 logger = logging.getLogger(__name__)
 
 # create the stream handler

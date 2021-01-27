@@ -5,8 +5,9 @@ from sklearn.model_selection import train_test_split
 
 from swi_ml import (
     logger,
-    set_logging_level,
+    set_automatic_fallback,
     set_backend,
+    set_logging_level,
 )
 from swi_ml.classification import (
     NaiveBayesClassification,
