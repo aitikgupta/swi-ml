@@ -3,6 +3,7 @@
 # library from RapidsAI (https://github.com/rapidsai/cuml)
 
 import logging
+import sys
 
 from .logs import INFOFORMATTER, DEBUGFORMATTER
 
@@ -44,3 +45,7 @@ from .utils import (
     manipulations,
     regularisers,
 )
+
+for module in (activations, distributions, manipulations, regularisers):
+    full_name = "{}.{}".format(__package__, module.__name__.rsplit(".")[-1])
+    sys.modules[full_name] = sys.modules[module.__name__]
