@@ -1,6 +1,10 @@
 from itertools import combinations_with_replacement
 
-import numpy as np
+try:
+    import numpy as np
+except ImportError:
+    # exception already handled in backend
+    pass
 
 
 def index_combinations(degree, num_features):
