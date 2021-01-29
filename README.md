@@ -10,8 +10,8 @@ A machine learning library written from scratch - with runtime switchable backen
 </p>
 
 
-[![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
+[![Codecov][codecov-shield]][codecov-url]
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
@@ -140,6 +140,8 @@ Aitik Gupta - [Personal Website](aitikgupta.github.io)
 
 [contributors-shield]: https://img.shields.io/github/contributors/aitikgupta/swi-ml.svg?style=flat-square
 [contributors-url]: https://github.com/aitikgupta/swi-ml/graphs/contributors
+[codecov-shield]: https://img.shields.io/codecov/c/gh/aitikgupta/swi-ml?style=flat-square
+[codecov-url]: https://codecov.io/gh/aitikgupta/swi-ml
 [forks-shield]: https://img.shields.io/github/forks/aitikgupta/swi-ml.svg?style=flat-square
 [forks-url]: https://github.com/aitikgupta/swi-ml/network/members
 [stars-shield]: https://img.shields.io/github/stars/aitikgupta/swi-ml.svg?style=flat-square
