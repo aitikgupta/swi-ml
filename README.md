@@ -12,8 +12,8 @@ A machine learning library written from scratch - with runtime switchable backen
 
 [![Stargazers][stars-shield]][stars-url]
 [![Codecov][codecov-shield]][codecov-url]
+[![Personal Website][website-shield]][website-url]
 [![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
 
 NOTE: This is NOT an alternative to libraries like [scikit-learn](https://scikit-learn.org/) and [cuML](https://docs.rapids.ai/api/cuml/stable/). Their interfaces are complete on their own!
 
@@ -153,3 +153,5 @@ Aitik Gupta - [Personal Website](aitikgupta.github.io)
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/aitik-gupta
 [product-screenshot]: images/screenshot.png
+[website-shield]: https://img.shields.io/badge/website-aitikgupta.ml-blue?style=flat-square
+[website-url]: https://aitikgupta.github.io/
