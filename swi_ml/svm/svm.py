@@ -33,7 +33,7 @@ class SVM(_Backend):
         self.history = []
         self.backend = super().get_backend()
 
-    def _initialise_uniform_weights(self, shape: tuple) -> None:
+    def _initialise_uniform_weights(self, shape: tuple):
         self.num_samples, self.num_features = shape
         limit = 1 / math.sqrt(self.num_features)
         self.W = self.backend.asarray(
@@ -46,7 +46,7 @@ class SVM(_Backend):
             self.hinge_constant,
         )
 
-    def _initialise_zeros_weights(self, shape: tuple) -> None:
+    def _initialise_zeros_weights(self, shape: tuple):
         self.num_samples, self.num_features = shape
         self.W = self.backend.asarray(
             self.backend.zeros(
@@ -57,7 +57,7 @@ class SVM(_Backend):
             1,
         )
 
-    def initialise_weights(self, X) -> None:
+    def initialise_weights(self, X):
         """
         Initialises weights with correct dimensions
         """

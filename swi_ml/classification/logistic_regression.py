@@ -15,7 +15,7 @@ class LogisticRegressionGD(_BaseRegression):
         normalize=False,
         initialiser="uniform",
         verbose=None,
-    ) -> None:
+    ):
         self.activation = activations.Sigmoid()
         regularisation = L1_L2Regularisation(
             multiply_factor=multiply_factor, l1_ratio=l1_ratio

@@ -156,7 +156,7 @@ Aitik Gupta - [Personal Website][website-url]
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/aitik-gupta
 [product-screenshot]: images/screenshot.png
-[python-shield]: https://img.shields.io/badge/python-3.7+-blue.svg
+[python-shield]: https://img.shields.io/badge/python-3.6+-blue.svg
 [python-url]: https://www.python.org/
 [website-shield]: https://img.shields.io/badge/website-aitikgupta.ml-blue?style=flat-square
 [website-url]: https://aitikgupta.github.io/

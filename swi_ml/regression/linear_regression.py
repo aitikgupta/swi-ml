@@ -1,5 +1,3 @@
-from __future__ import annotations
-
 import logging
 import math
 import time
@@ -32,7 +30,7 @@ class _BaseRegression(_Backend):
         regularisation=None,
         initialiser="uniform",
         verbose=None,
-    ) -> None:
+    ):
         if verbose is not None:
             logger.setLevel(verbose)
         else:
@@ -45,7 +43,7 @@ class _BaseRegression(_Backend):
         self.history = []
         self.backend = super().get_backend()
 
-    def _initialise_uniform_weights(self, shape: tuple) -> None:
+    def _initialise_uniform_weights(self, shape: tuple):
         self.num_samples, self.num_features = shape
         limit = 1 / math.sqrt(self.num_features)
         self.W = self.backend.asarray(
@@ -55,7 +53,7 @@ class _BaseRegression(_Backend):
             1,
         )
 
-    def _initialise_zeros_weights(self, shape: tuple) -> None:
+    def _initialise_zeros_weights(self, shape: tuple):
         self.num_samples, self.num_features = shape
         self.W = self.backend.asarray(
             self.backend.zeros(
@@ -66,7 +64,7 @@ class _BaseRegression(_Backend):
             1,
         )
 
-    def _update_history(self) -> None:
+    def _update_history(self):
         self.history.append(self.curr_loss)
 
     def _update_weights(self):
@@ -82,7 +80,7 @@ class _BaseRegression(_Backend):
             0.5 * (Y_true - Y_pred) ** 2
         ) + self.regularisation.add_cost_regularisation(self.W)
 
-    def initialise_weights(self, X) -> None:
+    def initialise_weights(self, X):
         """
         Initialises weights with correct dimensions
         """
@@ -154,7 +152,7 @@ class _BaseRegression(_Backend):
     def _predict(self, X):
         return X.dot(self.W) + self.b
 
-    def plot_loss(self) -> None:
+    def plot_loss(self):
         """
         Plots the loss history curve during the training period.
         NOTE: This function just plots the graph, to display it
@@ -174,7 +172,7 @@ class LinearRegressionGD(_BaseRegression):
         normalize=False,
         initialiser="uniform",
         verbose=None,
-    ) -> None:
+    ):
         # regularisation of alpha 0 (essentially NIL)
         regularisation = _BaseRegularisation(multiply_factor=0, l1_ratio=0)
         super().__init__(
@@ -186,7 +184,7 @@ class LinearRegressionGD(_BaseRegression):
             verbose,
         )
 
-    def plot_loss(self) -> None:
+    def plot_loss(self):
         plt.plot(self.history, label="Linear Regression")
         super().plot_loss()
 
@@ -200,7 +198,7 @@ class LassoRegressionGD(_BaseRegression):
         normalize=False,
         initialiser="uniform",
         verbose=None,
-    ) -> None:
+    ):
         regularisation = L1Regularisation(l1_cost=l1_cost)
         super().__init__(
             num_iterations,
@@ -211,7 +209,7 @@ class LassoRegressionGD(_BaseRegression):
             verbose,
         )
 
-    def plot_loss(self) -> None:
+    def plot_loss(self):
         plt.plot(self.history, label="Lasso Regression")
         super().plot_loss()
 
@@ -226,7 +224,7 @@ class RidgeRegressionGD(_BaseRegression):
         initialiser="uniform",
         backend="cupy",
         verbose=None,
-    ) -> None:
+    ):
         regularisation = L2Regularisation(l2_cost=l2_cost)
         super().__init__(
             num_iterations,
@@ -237,7 +235,7 @@ class RidgeRegressionGD(_BaseRegression):
             verbose,
         )
 
-    def plot_loss(self) -> None:
+    def plot_loss(self):
         plt.plot(self.history, label="Ridge Regression")
         super().plot_loss()
 
@@ -252,7 +250,7 @@ class ElasticNetRegressionGD(_BaseRegression):
         normalize=False,
         initialiser="uniform",
         verbose=None,
-    ) -> None:
+    ):
         regularisation = L1_L2Regularisation(
             multiply_factor=multiply_factor, l1_ratio=l1_ratio
         )
@@ -265,7 +263,7 @@ class ElasticNetRegressionGD(_BaseRegression):
             verbose,
         )
 
-    def plot_loss(self) -> None:
+    def plot_loss(self):
         plt.plot(self.history, label="Elastic Net Regression")
         super().plot_loss()
 
@@ -281,7 +279,7 @@ class PolynomialRegressionGD(_BaseRegression):
         normalize=False,
         initialiser="uniform",
         verbose=None,
-    ) -> None:
+    ):
         self.degree = degree
         regularisation = L1_L2Regularisation(
             multiply_factor=multiply_factor, l1_ratio=l1_ratio
@@ -303,7 +301,7 @@ class PolynomialRegressionGD(_BaseRegression):
         poly_data = transform_polynomial(data, self.degree)
         return super()._predict_preprocess(poly_data)
 
-    def plot_loss(self) -> None:
+    def plot_loss(self):
         plt.plot(
             self.history, label=f"Polynomial Regression, degree={self.degree}"
         )
