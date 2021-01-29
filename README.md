@@ -60,6 +60,18 @@ set_backend("numpy")
 set_backend("cupy")
 ```
 
+### Automatic fallback
+Don't have a physical GPU, or don't know if you have a proper setup for a [GPU-enabled backend](https://github.com/aitikgupta/swi-ml#installation)?
+
+Set automatic fallback (to [NumPy](https://github.com/aitikgupta/swi-ml#installation) - the only hard dependency):
+```python
+from swi_ml import set_automatic_fallback
+
+# this has been enabled by default for tests
+# see https://github.com/aitikgupta/swi-ml/blob/master/tests/__init__.py
+set_automatic_fallback(True)
+```
+
 ### A simple Linear Regression with Gradient Descent
 ```python
 from swi_ml.regression import LinearRegressionGD
