@@ -1,47 +1,48 @@
-<br />
+# swi-ml
+A machine learning library written from scratch - with runtime switchable backend!
 <p align="center">
   <a href="https://github.com/aitikgupta/swi-ml">
     <img src="logo/swi-ml.png" alt="Logo" width="200" height="100">
   </a>
   <p align="center">
-    A machine learning library written from scratch - with runtime switchable backend!
+    Provides a single interface to interact with single-core CPU operations (with <a href="https://numpy.org/">NumPy</a> backend), as well as thousands of cores on a GPU (with <a href="https://cupy.dev/">CuPy</a> backend), in runtime!
   </p>
 </p>
 
-This library builds on a personal project, provides a single interface to interact with single-core CPU operations (with `NumPy` backend), as well as hundreds of cores on a GPU (with `CuPy` backend), in runtime!
-
-NOTE: This is NOT an alternative to libraries like `scikit-learn` and `cuML`. Their interfaces are complete on their own!
 
 [![Forks][forks-shield]][forks-url]
 [![Stargazers][stars-shield]][stars-url]
 [![MIT License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
+NOTE: This is NOT an alternative to libraries like [scikit-learn](https://scikit-learn.org/) and [cuML](https://docs.rapids.ai/api/cuml/stable/). Their interfaces are complete on their own!
+
+
 ### Prerequsites
 
-`swi-ml` is built on bare Python and NumPy backbones, all other dependencies are optional!
+[swi-ml](https://github.com/aitikgupta/swi-ml) is built on bare Python and NumPy backbones, all other dependencies are optional!
 * [NumPy](https://numpy.org/)
-* [CuPy](https://cupy.dev/) (optional)
-* [Matplotlib](https://matplotlib.org) (optional)
+* [CuPy](https://cupy.dev/) _(Optional)_
+* [Matplotlib](https://matplotlib.org) _(Optional)_
 
 ### Installation
 
-1. (Optional) Setup a virtual environment using `virtualenv` or `anaconda`.
+1. _(Optional)_ Setup a virtual environment using `virtualenv` or `anaconda`.
 2. Install [NumPy](https://numpy.org/) by following their [insallation guide](https://numpy.org/install/) or simply via `pip`:
     ```console
     pip install numpy
     ```
-3. (Optional) For GPU-supported backend, setup a working installation of [CuPy]() by following their [installation guide](https://docs.cupy.dev/en/stable/install.html#install-cupy).
+3. _(Optional)_ For GPU-supported backend, setup a working installation of [CuPy](https://cupy.dev/) by following their [installation guide](https://docs.cupy.dev/en/stable/install.html#install-cupy).
     ```console
     python -c 'import cupy; cupy.show_config()'
     ```
-4. (Optional) Install [Matplotlib](https://matplotlib.org) to plot specific curves. (via their [installation guide](https://matplotlib.org/users/installing.html))
+4. _(Optional)_ Install [Matplotlib](https://matplotlib.org) to plot specific curves. (via their [installation guide](https://matplotlib.org/users/installing.html))
 5. Install `swi-ml`:
    ```console
    pip install swi-ml  # from PyPI
-   pip install git+https://github.com/aitikgupta/swi-ml  # from Github
+   pip install git+https://github.com/aitikgupta/swi-ml  # from GitHub
    ```
-6. (Optional) To run the pre-defined tests, install [pytest](https://docs.pytest.org/en/stable/) by following their [installation guide](https://docs.pytest.org/en/stable/getting-started.html) or simply via `pip`:
+6. _(Optional)_ To run the pre-defined tests, install [pytest](https://docs.pytest.org/en/stable/) by following their [installation guide](https://docs.pytest.org/en/stable/getting-started.html) or simply via `pip`:
    ```console
    pip install pytest
    ```
@@ -90,7 +91,7 @@ INFO: Training time: 0.00035 seconds
 Current MSE: 0.054780625247184585
 ```
 
-_For more concrete examples, please refer to [examples directory](https://github.com/aitikgupta/swi-ml)._
+_For more concrete examples, please refer to [examples directory](https://github.com/aitikgupta/swi-ml/tree/master/examples)._
 
 ### Running the tests
 
@@ -124,8 +125,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 ## About
 
 Aitik Gupta - [Personal Website](aitikgupta.github.io)
-
-Project Link: [https://github.com/aitikgupta/swi-ml](https://github.com/aitikgupta/swi-ml)
 
 [contributors-shield]: https://img.shields.io/github/contributors/aitikgupta/swi-ml.svg?style=flat-square
 [contributors-url]: https://github.com/aitikgupta/swi-ml/graphs/contributors
