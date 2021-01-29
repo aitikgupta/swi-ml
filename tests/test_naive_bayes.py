@@ -41,6 +41,19 @@ def test_naive_bayes():
     assert Y_pred_np is not None
 
 
+def test_naive_bayes_probability():
+    dist = "gaussian"
+
+    model_np = NaiveBayesClassification(distribution=dist)
+
+    model_np.fit(X_train, Y_train)
+    Y_pred = model_np.predict(X_test, probability=False)
+    Y_pred_proba = model_np.predict(X_test, probability=True)
+
+    assert Y_pred.shape[0] == Y_pred_proba.shape[0]
+    assert Y_pred_proba.shape[1] == 2
+
+
 @pytest.mark.xfail
 def test_naive_bayes_special_case():
     dist = "gaussian"

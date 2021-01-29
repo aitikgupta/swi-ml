@@ -62,7 +62,7 @@ class NaiveBayesClassification(_Backend):
         if len(data.shape) < 2:
             data = data.reshape(1, -1)
         if probability:
-            predictions = self.backend.empty(data.shape)
+            predictions = self.backend.empty((data.shape[0], 2))
         else:
             predictions = self.backend.empty(data.shape[0])
         return data, predictions
