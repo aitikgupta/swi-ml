@@ -2,7 +2,7 @@
 A machine learning library written from scratch - with runtime switchable backend!
 <p align="center">
   <a href="https://github.com/aitikgupta/swi-ml">
-    <img src="logo/swi-ml.png" alt="Logo" width="200" height="100">
+    <img src="https://raw.githubusercontent.com/aitikgupta/swi-ml/master/logo/swi-ml.png" alt="Logo" width="200" height="100">
   </a>
   <p align="center">
     Provides a single interface to interact with single-core CPU operations (with <a href="https://numpy.org/">NumPy</a> backend), as well as thousands of cores on a GPU (with <a href="https://cupy.dev/">CuPy</a> backend), in runtime!
@@ -137,7 +137,7 @@ Distributed under the MIT License. See `LICENSE` for more information.
 
 ## About
 
-Aitik Gupta - [Personal Website](aitikgupta.github.io)
+Aitik Gupta - [Personal Website][website-url]
 
 [black-shield]: https://img.shields.io/badge/code%20style-black-000000.svg?style=flat-square
 [black-url]: https://github.com/psf/black
