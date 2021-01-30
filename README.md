@@ -10,6 +10,7 @@ A machine learning library written from scratch - with runtime switchable backen
 </p>
 
 [![Python][python-shield]][python-url]
+[![PyPI][pypi-shield]][pypi-url]
 [![Code style][black-shield]][black-url]
 [![Stargazers][stars-shield]][stars-url]
 [![Codecov][codecov-shield]][codecov-url]
@@ -156,6 +157,8 @@ Aitik Gupta - [Personal Website][website-url]
 [linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=flat-square&logo=linkedin&colorB=555
 [linkedin-url]: https://linkedin.com/in/aitik-gupta
 [product-screenshot]: images/screenshot.png
+[pypi-shield]: https://img.shields.io/pypi/v/swi-ml?style=flat-square
+[pypi-url]: https://pypi.org/project/swi-ml/
 [python-shield]: https://img.shields.io/badge/python-3.6+-blue.svg
 [python-url]: https://www.python.org/
 [website-shield]: https://img.shields.io/badge/website-aitikgupta.ml-blue?style=flat-square
